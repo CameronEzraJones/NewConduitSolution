@@ -8,6 +8,7 @@ namespace Conduit.Context
     public class ConduitDbContext : IdentityDbContext<IdentityUser>
     {
         public DbSet<UserPersonalizationDTO> UserPersonalization { get; set; }
+        public DbSet<UserIsFollowingDTO> UserIsFollowingDTO { get; set; }
 
         public ConduitDbContext(DbContextOptions<ConduitDbContext> options) : base(options)
         {
@@ -21,6 +22,8 @@ namespace Conduit.Context
         {
             base.OnModelCreating(builder);
             builder.Entity<UserPersonalizationDTO>();
+            builder.Entity<UserIsFollowingDTO>()
+                .HasKey(e => new { e.FollowerId, e.FolloweeId});
         }
     }
 }

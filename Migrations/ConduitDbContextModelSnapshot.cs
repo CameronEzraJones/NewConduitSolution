@@ -20,6 +20,19 @@ namespace Conduit.Migrations
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("Conduit.Model.DTO.UserIsFollowingDTO", b =>
+                {
+                    b.Property<string>("FollowerId");
+
+                    b.Property<string>("FolloweeId");
+
+                    b.HasKey("FollowerId", "FolloweeId");
+
+                    b.HasIndex("FolloweeId");
+
+                    b.ToTable("UserIsFollowingDTO");
+                });
+
             modelBuilder.Entity("Conduit.Model.DTO.UserPersonalizationDTO", b =>
                 {
                     b.Property<string>("UserId");
@@ -190,6 +203,19 @@ namespace Conduit.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("Conduit.Model.DTO.UserIsFollowingDTO", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Followee")
+                        .WithMany()
+                        .HasForeignKey("FolloweeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Follower")
+                        .WithMany()
+                        .HasForeignKey("FollowerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Conduit.Model.DTO.UserPersonalizationDTO", b =>
