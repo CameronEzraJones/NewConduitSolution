@@ -1,46 +1,60 @@
 ﻿using Conduit.Model;
 using Conduit.Model.Holder;
-using Conduit.Model.Holder.Error;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Conduit.Validators
 {
-    public class UpdateUserValidatorAttribute : ActionFilterAttribute
+    public class UpdateUserValidatorAttribute : TypeFilterAttribute
     {
-        public override void OnActionExecuting(ActionExecutingContext context)
+        public UpdateUserValidatorAttribute():base(typeof(UpdateUserValidatorImpl)) { }
+
+        private class UpdateUserValidatorImpl : ConduitValidatorUtils, IActionFilter
         {
-            UserUpdateDataHolder userHolder = context.ActionArguments["userHolder"] as UserUpdateDataHolder;
-            if (null == userHolder)
+            private readonly ILogger<UpdateUserValidatorAttribute> _logger;
+
+            public UpdateUserValidatorImpl(ILoggerFactory loggerFactory)
             {
-                context.HttpContext.Response.StatusCode = 422;
-                context.Result = new JsonResult(new ErrorResponseHolder("The Request content is invalid."));
-                return;
+                _logger = loggerFactory.CreateLogger<UpdateUserValidatorAttribute>();
             }
-            UserUpdateData user = userHolder.User;
-            if (null == user)
+
+            public void OnActionExecuted(ActionExecutedContext context)
             {
-                context.HttpContext.Response.StatusCode = 422;
-                context.Result = new JsonResult(new ErrorResponseHolder("There is no user information in the request."));
-                return;
             }
-            if (!context.ModelState.IsValid)
+
+            public void OnActionExecuting(ActionExecutingContext context)
             {
-                context.HttpContext.Response.StatusCode = 422;
-                List<string> errors = context
-                    .ModelState
-                    .Values
-                    .SelectMany(e => e.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .Distinct()
-                    .Cast<string>()
-                    .ToList();
-                ErrorResponseHolder error = new ErrorResponseHolder(errors);
-                context.Result = new JsonResult(error);
+                var jwtUser = context.HttpContext.User;
+                if(!jwtUser.HasClaim(c => c.Type == JwtRegisteredClaimNames.Email))
+                {
+                    InvalidateRequest(context, "Invalid token for request", _logger, 401);
+                }
+                UserUpdateDataHolder userHolder = context.ActionArguments["userHolder"] as UserUpdateDataHolder;
+                if (null == userHolder)
+                {
+                    InvalidateRequest(context, "No user holder is present.", _logger, 422);
+                }
+                UserUpdateData user = userHolder.User;
+                if (null == user)
+                {
+                    InvalidateRequest(context, "No user is present in the user holder.", _logger, 422);
+                }
+                if (!context.ModelState.IsValid)
+                {
+                    List<string> errors = context
+                        .ModelState
+                        .Values
+                        .SelectMany(e => e.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .Distinct()
+                        .Cast<string>()
+                        .ToList();
+                    InvalidateRequest(context, errors, _logger, 422);
+                }
             }
         }
     }

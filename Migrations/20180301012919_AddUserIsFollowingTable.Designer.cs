@@ -11,113 +11,17 @@ using System;
 namespace Conduit.Migrations
 {
     [DbContext(typeof(ConduitDbContext))]
-    partial class ConduitDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180301012919_AddUserIsFollowingTable")]
+    partial class AddUserIsFollowingTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Conduit.Model.DAO.ArticleDAO", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("AuthorId");
-
-                    b.Property<string>("Body")
-                        .IsRequired();
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("Description")
-                        .IsRequired();
-
-                    b.Property<string>("Slug")
-                        .IsRequired();
-
-                    b.Property<string>("Title")
-                        .IsRequired();
-
-                    b.Property<DateTime>("UpdatedAt");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
-
-                    b.ToTable("Article");
-                });
-
-            modelBuilder.Entity("Conduit.Model.DAO.ArticleTagsDAO", b =>
-                {
-                    b.Property<int>("TagId");
-
-                    b.Property<int>("ArticleId");
-
-                    b.HasKey("TagId", "ArticleId");
-
-                    b.HasIndex("ArticleId");
-
-                    b.ToTable("ArticleTag");
-                });
-
-            modelBuilder.Entity("Conduit.Model.DAO.CommentDAO", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("ArticleId");
-
-                    b.Property<string>("AuthorId");
-
-                    b.Property<string>("Body")
-                        .IsRequired();
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<DateTime>("UpdatedAt");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ArticleId");
-
-                    b.HasIndex("AuthorId");
-
-                    b.ToTable("Comment");
-                });
-
-            modelBuilder.Entity("Conduit.Model.DAO.FavoriteArticleDAO", b =>
-                {
-                    b.Property<string>("UserId");
-
-                    b.Property<int>("ArticleId");
-
-                    b.HasKey("UserId", "ArticleId");
-
-                    b.HasIndex("ArticleId");
-
-                    b.ToTable("FavoriteArticle");
-                });
-
-            modelBuilder.Entity("Conduit.Model.DAO.TagDAO", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Tag");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Tag")
-                        .IsUnique()
-                        .HasFilter("[Tag] IS NOT NULL");
-
-                    b.ToTable("Tag");
-                });
-
-            modelBuilder.Entity("Conduit.Model.DAO.UserIsFollowingDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.UserIsFollowingDTO", b =>
                 {
                     b.Property<string>("FollowerId");
 
@@ -127,10 +31,10 @@ namespace Conduit.Migrations
 
                     b.HasIndex("FolloweeId");
 
-                    b.ToTable("UserIsFollowing");
+                    b.ToTable("UserIsFollowingDTO");
                 });
 
-            modelBuilder.Entity("Conduit.Model.DAO.UserPersonalizationDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.UserPersonalizationDTO", b =>
                 {
                     b.Property<string>("UserId");
 
@@ -302,52 +206,7 @@ namespace Conduit.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Conduit.Model.DAO.ArticleDAO", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("AuthorId");
-                });
-
-            modelBuilder.Entity("Conduit.Model.DAO.ArticleTagsDAO", b =>
-                {
-                    b.HasOne("Conduit.Model.DAO.ArticleDAO", "Article")
-                        .WithMany()
-                        .HasForeignKey("ArticleId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Conduit.Model.DAO.TagDAO", "Tag")
-                        .WithMany()
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Conduit.Model.DAO.CommentDAO", b =>
-                {
-                    b.HasOne("Conduit.Model.DAO.ArticleDAO", "Article")
-                        .WithMany()
-                        .HasForeignKey("ArticleId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId");
-                });
-
-            modelBuilder.Entity("Conduit.Model.DAO.FavoriteArticleDAO", b =>
-                {
-                    b.HasOne("Conduit.Model.DAO.ArticleDAO", "Article")
-                        .WithMany()
-                        .HasForeignKey("ArticleId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Conduit.Model.DAO.UserIsFollowingDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.UserIsFollowingDTO", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Followee")
                         .WithMany()
@@ -360,7 +219,7 @@ namespace Conduit.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Conduit.Model.DAO.UserPersonalizationDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.UserPersonalizationDTO", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()

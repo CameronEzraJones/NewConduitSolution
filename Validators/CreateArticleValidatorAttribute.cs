@@ -1,4 +1,5 @@
-﻿using Conduit.Model;
+﻿using Conduit.Exceptions;
+using Conduit.Model;
 using Conduit.Model.Holder;
 using Conduit.Model.Holder.Error;
 using Microsoft.AspNetCore.Mvc;
@@ -11,34 +12,37 @@ using System.Threading.Tasks;
 
 namespace Conduit.Validators
 {
-    public class LoginUserValidatorAttribute : TypeFilterAttribute
+    public class CreateArticleValidatorAttribute : TypeFilterAttribute
     {
-        public LoginUserValidatorAttribute():base(typeof(LoginUserValidatorImpl)) { }
+        public CreateArticleValidatorAttribute() : base(typeof(CreateArticleValidatorImpl)) { }
 
-        private class LoginUserValidatorImpl : ConduitValidatorUtils, IActionFilter
+        private class CreateArticleValidatorImpl : ConduitValidatorUtils, IActionFilter
         {
-            private readonly ILogger<LoginUserValidatorAttribute> _logger;
+            private readonly ILogger<CreateArticleValidatorAttribute> _logger;
 
-            public LoginUserValidatorImpl(ILoggerFactory loggerFactory)
+            public CreateArticleValidatorImpl(ILoggerFactory loggerFactory)
             {
-                _logger = loggerFactory.CreateLogger<LoginUserValidatorAttribute>();
+                _logger = loggerFactory.CreateLogger<CreateArticleValidatorAttribute>();
             }
 
             public void OnActionExecuted(ActionExecutedContext context)
             {
+                context.Exception = null;
             }
 
             public void OnActionExecuting(ActionExecutingContext context)
             {
-                AuthUserHolder userHolder = context.ActionArguments["userHolder"] as AuthUserHolder;
-                if (null == userHolder)
+                NewArticleHolder articleHolder = context.ActionArguments["newArticle"] as NewArticleHolder;
+                if (null == articleHolder)
                 {
-                    InvalidateRequest(context, "No user holder is present.", _logger, 422);
+                    InvalidateRequest(context, "No article holder is present", _logger, 422);
+                    return;
                 }
-                AuthUser user = userHolder.User;
-                if (null == user)
+                NewArticle article = articleHolder.Article;
+                if (null == article)
                 {
-                    InvalidateRequest(context, "There is no user present in the user holder.", _logger, 422);
+                    InvalidateRequest(context, "There is no article in the holder", _logger, 422);
+                    return;
                 }
                 if (!context.ModelState.IsValid)
                 {

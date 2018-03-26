@@ -11,16 +11,17 @@ using System;
 namespace Conduit.Migrations
 {
     [DbContext(typeof(ConduitDbContext))]
-    partial class ConduitDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180307002106_AddArticles")]
+    partial class AddArticles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Conduit.Model.DAO.ArticleDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.ArticleDTO", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -50,7 +51,7 @@ namespace Conduit.Migrations
                     b.ToTable("Article");
                 });
 
-            modelBuilder.Entity("Conduit.Model.DAO.ArticleTagsDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.ArticleTagsDTO", b =>
                 {
                     b.Property<int>("TagId");
 
@@ -63,7 +64,7 @@ namespace Conduit.Migrations
                     b.ToTable("ArticleTag");
                 });
 
-            modelBuilder.Entity("Conduit.Model.DAO.CommentDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.CommentDTO", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -88,20 +89,7 @@ namespace Conduit.Migrations
                     b.ToTable("Comment");
                 });
 
-            modelBuilder.Entity("Conduit.Model.DAO.FavoriteArticleDAO", b =>
-                {
-                    b.Property<string>("UserId");
-
-                    b.Property<int>("ArticleId");
-
-                    b.HasKey("UserId", "ArticleId");
-
-                    b.HasIndex("ArticleId");
-
-                    b.ToTable("FavoriteArticle");
-                });
-
-            modelBuilder.Entity("Conduit.Model.DAO.TagDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.TagDTO", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -117,7 +105,7 @@ namespace Conduit.Migrations
                     b.ToTable("Tag");
                 });
 
-            modelBuilder.Entity("Conduit.Model.DAO.UserIsFollowingDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.UserIsFollowingDTO", b =>
                 {
                     b.Property<string>("FollowerId");
 
@@ -130,7 +118,7 @@ namespace Conduit.Migrations
                     b.ToTable("UserIsFollowing");
                 });
 
-            modelBuilder.Entity("Conduit.Model.DAO.UserPersonalizationDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.UserPersonalizationDTO", b =>
                 {
                     b.Property<string>("UserId");
 
@@ -302,29 +290,29 @@ namespace Conduit.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Conduit.Model.DAO.ArticleDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.ArticleDTO", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("AuthorId");
                 });
 
-            modelBuilder.Entity("Conduit.Model.DAO.ArticleTagsDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.ArticleTagsDTO", b =>
                 {
-                    b.HasOne("Conduit.Model.DAO.ArticleDAO", "Article")
+                    b.HasOne("Conduit.Model.DTO.ArticleDTO", "Article")
                         .WithMany()
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Conduit.Model.DAO.TagDAO", "Tag")
+                    b.HasOne("Conduit.Model.DTO.TagDTO", "Tag")
                         .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Conduit.Model.DAO.CommentDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.CommentDTO", b =>
                 {
-                    b.HasOne("Conduit.Model.DAO.ArticleDAO", "Article")
+                    b.HasOne("Conduit.Model.DTO.ArticleDTO", "Article")
                         .WithMany()
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -334,20 +322,7 @@ namespace Conduit.Migrations
                         .HasForeignKey("AuthorId");
                 });
 
-            modelBuilder.Entity("Conduit.Model.DAO.FavoriteArticleDAO", b =>
-                {
-                    b.HasOne("Conduit.Model.DAO.ArticleDAO", "Article")
-                        .WithMany()
-                        .HasForeignKey("ArticleId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Conduit.Model.DAO.UserIsFollowingDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.UserIsFollowingDTO", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Followee")
                         .WithMany()
@@ -360,7 +335,7 @@ namespace Conduit.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Conduit.Model.DAO.UserPersonalizationDAO", b =>
+            modelBuilder.Entity("Conduit.Model.DTO.UserPersonalizationDTO", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()

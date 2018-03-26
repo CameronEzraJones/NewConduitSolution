@@ -27,9 +27,11 @@ namespace Conduit.Model
 
         public IdentityUser CreateIdentityUser()
         {
-            var user = new IdentityUser();
-            user.UserName = Username;
-            user.Email = Email;
+            var user = new IdentityUser
+            {
+                UserName = Username,
+                Email = Email
+            };
             return user;
         }
     }

@@ -6,9 +6,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Conduit.Model.DTO
+namespace Conduit.Model.DAO
 {
-    public class UserPersonalizationDTO
+    public class UserPersonalizationDAO
     {
         [Key]
         [ForeignKey("User")]
@@ -21,12 +21,12 @@ namespace Conduit.Model.DTO
 
         public IdentityUser User { get; set; }
 
-        public UserPersonalizationDTO()
+        public UserPersonalizationDAO()
         {
 
         }
 
-        public UserPersonalizationDTO(
+        public UserPersonalizationDAO(
             string userId,
             string bio,
             string image

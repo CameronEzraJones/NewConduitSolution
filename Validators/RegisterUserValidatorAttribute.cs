@@ -4,47 +4,59 @@ using Conduit.Model.Holder.Error;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Conduit.Validators
 {
-    public class RegisterUserValidatorAttribute : ActionFilterAttribute
+    public class RegisterUserValidatorAttribute : TypeFilterAttribute
     {
-        public override void OnActionExecuting(ActionExecutingContext context)
+        public RegisterUserValidatorAttribute():base(typeof(RegisterUserValidatorImpl)) { }
+
+        private class RegisterUserValidatorImpl : ConduitValidatorUtils, IActionFilter
         {
-            AuthUserHolder userHolder = context.ActionArguments["userHolder"] as AuthUserHolder;
-            if(null == userHolder)
+            private readonly ILogger<RegisterUserValidatorAttribute> _logger;
+            private readonly UserManager<IdentityUser> _userManager;
+
+            public RegisterUserValidatorImpl(ILoggerFactory loggerFactory, UserManager<IdentityUser> userManager)
             {
-                context.HttpContext.Response.StatusCode = 422;
-                context.Result = new JsonResult(new ErrorResponseHolder("The Request content is invalid."));
-                return;
+                _logger = loggerFactory.CreateLogger<RegisterUserValidatorAttribute>();
+                _userManager = userManager;
             }
-            AuthUser user = userHolder.User;
-            if(null == user)
+
+            public void OnActionExecuted(ActionExecutedContext context)
             {
-                context.HttpContext.Response.StatusCode = 422;
-                context.Result = new JsonResult(new ErrorResponseHolder("There is no user in the request."));
-                return;
             }
-            if(null == user.Username)
+
+            public void OnActionExecuting(ActionExecutingContext context)
             {
-                context.HttpContext.Response.StatusCode = 422;
-                context.Result = new JsonResult(new ErrorResponseHolder("The Username field is required."));
-            }
-            if(!context.ModelState.IsValid)
-            {
-                context.HttpContext.Response.StatusCode = 422;
-                List<string> errors = context
-                    .ModelState
-                    .Values
-                    .SelectMany(e => e.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .Distinct()
-                    .Cast<string>()
-                    .ToList();
-                ErrorResponseHolder error = new ErrorResponseHolder(errors);
-                context.Result = new JsonResult(error);
+                AuthUserHolder userHolder = context.ActionArguments["userHolder"] as AuthUserHolder;
+                if (null == userHolder)
+                {
+                    InvalidateRequest(context, "No user holder is present.", _logger, 422);
+                }
+                AuthUser user = userHolder.User;
+                if (null == user)
+                {
+                    InvalidateRequest(context, "No user is present in the user holder.", _logger, 422);
+                }
+                if (null == user.Username)
+                {
+                    InvalidateRequest(context, "No username is present in the user.", _logger, 422);
+                }
+                if (!context.ModelState.IsValid)
+                {
+                    List<string> errors = context
+                        .ModelState
+                        .Values
+                        .SelectMany(e => e.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .Distinct()
+                        .Cast<string>()
+                        .ToList();
+                    InvalidateRequest(context, errors, _logger, 422);
+                }
             }
         }
     }
