@@ -202,11 +202,12 @@ namespace Conduit.Controllers
         }
 
         [HttpGet("/api/tags")]
-        public IActionResult GetTags()
+        public async Task<IActionResult> GetTags()
         {
             try
             {
-                return Ok(_articleService.GetTags());
+                List<string> tags = await _articleService.GetTags();
+                return Ok(new TagsHolder(tags));
             }
             catch (Exception ex)
             {

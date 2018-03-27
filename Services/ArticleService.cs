@@ -98,7 +98,7 @@ namespace Conduit.Services
             }
         }
 
-        public override async Task<List<Article>> GetArticles(Dictionary<string, string> query, string authedUsername = null)
+        public override async Task<List<Article>> GetArticles(Dictionary<string, string> query, string authedUsername)
         {
             List<int> articleIds = _articleRepository.GetAllArticleIds();
             if(null != query.GetValueOrDefault("tag"))

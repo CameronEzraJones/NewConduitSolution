@@ -32,7 +32,7 @@ namespace Conduit.Repositories
             List<TagDAO> tags = new List<TagDAO>();
             foreach(String tag in tagList)
             {
-                TagDAO tagDao = _tag.Where(e => e.Tag == tag).Single();
+                TagDAO tagDao = _tag.Where(e => e.Tag == tag).SingleOrDefault();
                 if(tagDao == null)
                 {
                     tagDao = new TagDAO

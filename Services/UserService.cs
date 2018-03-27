@@ -102,6 +102,7 @@ namespace Conduit.Services
                     throw new ConduitValidationException(errors);
                 }
                 _userPersonalizationRepository.CreateUserPersonalizationForId(user.Id);
+                _context.SaveChanges();
                 transaction.Commit();
                 return new User(email, GenerateJWTToken(user), username, null, null);
             } catch (Exception ex)
@@ -127,7 +128,7 @@ namespace Conduit.Services
                 }
                 if(null != updateData.Email)
                 {
-                    var result = await _userManager.SetUserNameAsync(identityUser, updateData.Username);
+                    var result = await _userManager.SetEmailAsync(identityUser, updateData.Email);
                     if(!result.Succeeded)
                     {
                         throw new ConduitServerException($"Failed to update email of user with username {username}");
