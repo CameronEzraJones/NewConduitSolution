@@ -75,6 +75,7 @@ namespace Conduit.Services
             {
                 ArticleDAO article = await _articleRepository.GetArticleBySlug(slug);
                 _articleRepository.DeleteArticle(article.Id);
+                _context.SaveChanges();
                 transaction.Commit();
                 return;
             } catch (Exception ex)

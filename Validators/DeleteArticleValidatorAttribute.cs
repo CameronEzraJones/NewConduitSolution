@@ -39,7 +39,7 @@ namespace Conduit.Validators
                 if (!jwtUser.HasClaim(c => c.Type == JwtRegisteredClaimNames.Sub))
                 {
                     InvalidateRequest(context, "Invalid token for request", _logger, 401);
-                    return;
+                    await next();
                 }
                 String username = context.HttpContext.User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub).Value;
                 String slug = context.ActionArguments["slug"] as String;
@@ -47,9 +47,9 @@ namespace Conduit.Validators
                 if(article.Author.Username != username)
                 {
                     InvalidateRequest(context, "You are not authorized to delete this article", _logger, 403);
-                    return;
+                    await next();
                 }
-                return;
+                await next();
             }
         }
     }
