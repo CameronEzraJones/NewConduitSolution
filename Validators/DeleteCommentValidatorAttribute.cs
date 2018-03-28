@@ -40,24 +40,20 @@ namespace Conduit.Validators
                 }
                 String username = context.HttpContext.User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub).Value;
                 string slug = context.ActionArguments["slug"] as string;
-                string pathId = context.ActionArguments["id"] as string;
-                int id;
-                try
-                {
-                    id = Convert.ToInt32(pathId);
-                } catch (Exception)
+                int? id = Convert.ToInt32(context.RouteData.Values["id"]);
+                if(null == id)
                 {
                     InvalidateRequest(context, "id must be a number", _logger, 422);
                     return;
                 }
-                Article article = await _articleService.GetArticle(null, slug);
+                Article article = await _articleService.GetArticle(slug, null);
                 if (null == article || null == article.Slug)
                 {
                     InvalidateRequest(context, $"No article with the given slug {slug}", _logger, 404);
                     return;
                 }
                 List<Comment> comments = await _commentService.GetComments(null, slug);
-                Comment comment;
+                Comment comment = null;
                 try
                 {
                     comment = comments.Where(e => e.Id == id).Single();
@@ -71,6 +67,7 @@ namespace Conduit.Validators
                     InvalidateRequest(context, $"You are not authorized to delete this comment", _logger, 404);
                     return;
                 }
+                await next();
             }
         }
     }

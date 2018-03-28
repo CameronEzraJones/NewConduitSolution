@@ -111,7 +111,7 @@ namespace Conduit.Controllers
                 {
                     username = null;
                 }
-                Article article = await _articleService.GetArticle(username, slug);
+                Article article = await _articleService.GetArticle(slug, username);
                 return Ok(new SingleArticleHolder(article));
             } catch (Exception ex)
             {
@@ -150,6 +150,7 @@ namespace Conduit.Controllers
         }
 
         [HttpPost("/api/articles/{slug}/comments"), Authorize(Policy = "ValidUsername")]
+        [CreateCommentValidator]
         public async Task<IActionResult> CreateComment(string slug, [FromBody] NewCommentHolder newCommentHolder)
         {
             try
@@ -165,6 +166,7 @@ namespace Conduit.Controllers
         }
 
         [HttpGet("/api/articles/{slug}/comments")]
+        [GetCommentsValidator]
         public async Task<IActionResult> GetComments(string slug)
         {
             try
@@ -188,6 +190,7 @@ namespace Conduit.Controllers
         }
 
         [HttpDelete("/api/articles/{slug}/comments/{id}"), Authorize(Policy = "ValidUsername")]
+        [DeleteCommentValidator]
         public IActionResult DeleteComment(string slug, int id)
         {
             try

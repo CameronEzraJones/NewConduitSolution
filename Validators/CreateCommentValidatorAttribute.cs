@@ -30,23 +30,23 @@ namespace Conduit.Validators
             public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
             {
                 string slug = context.ActionArguments["slug"] as string;
-                Article article = await _articleService.GetArticle(null, slug);
+                Article article = await _articleService.GetArticle(slug, null);
                 if(null == article || null == article.Slug)
                 {
                     InvalidateRequest(context, $"No article with the specified slug {slug}", _logger, 404);
-                    return;
+                    await next();
                 }
-                NewCommentHolder newCommentHolder = context.ActionArguments["newComment"] as NewCommentHolder;
+                NewCommentHolder newCommentHolder = context.ActionArguments["newCommentHolder"] as NewCommentHolder;
                 if(null == newCommentHolder)
                 {
                     InvalidateRequest(context, "No comment holder is present", _logger, 404);
-                    return;
+                    await next();
                 }
                 NewComment newComment = newCommentHolder.Comment;
                 if(null == newComment)
                 {
                     InvalidateRequest(context, "No comment in the holder", _logger, 404);
-                    return;
+                    await next();
                 }
                 if (!context.ModelState.IsValid)
                 {
@@ -59,7 +59,9 @@ namespace Conduit.Validators
                         .Cast<string>()
                         .ToList();
                     InvalidateRequest(context, errors, _logger, 422);
+                    await next();
                 }
+                await next();
             }
         }
     }

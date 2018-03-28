@@ -42,7 +42,7 @@ namespace Conduit.Validators
                 }
                 String username = context.HttpContext.User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub).Value;
                 String slug = context.ActionArguments["slug"] as String;
-                Article article = await _articleService.GetArticle(username, slug);
+                Article article = await _articleService.GetArticle(slug, username);
                 if(article.Author.Username != username)
                 {
                     InvalidateRequest(context, "You are not authorized to edit this article", _logger, 403);

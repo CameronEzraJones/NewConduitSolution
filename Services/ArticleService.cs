@@ -85,11 +85,10 @@ namespace Conduit.Services
             }
         }
 
-        public override async Task<Article> GetArticle(string authedUsername, string slug)
+        public override async Task<Article> GetArticle(string slug, string authedUsername = null)
         {
             try
             {
-                IdentityUser authedUser = await _userManager.FindByNameAsync(authedUsername);
                 ArticleDAO articleDao = await _articleRepository.GetArticleBySlug(slug);
                 Article article = await CreateArticleFromDAO(articleDao, authedUsername);
                 return article;
@@ -99,7 +98,7 @@ namespace Conduit.Services
             }
         }
 
-        public override async Task<List<Article>> GetArticles(Dictionary<string, string> query, string authedUsername)
+        public override async Task<List<Article>> GetArticles(Dictionary<string, string> query, string authedUsername = null)
         {
             List<int> articleIds = _articleRepository.GetAllArticleIds();
             if(null != query.GetValueOrDefault("tag"))

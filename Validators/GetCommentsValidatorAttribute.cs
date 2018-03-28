@@ -29,13 +29,13 @@ namespace Conduit.Validators
             public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
             {
                 string slug = context.ActionArguments["slug"] as string;
-                Article article = await _articleService.GetArticle(null, slug);
+                Article article = await _articleService.GetArticle(slug, null);
                 if(null == article || null == article.Slug)
                 {
                     InvalidateRequest(context, $"No article with the given slug {slug}", _logger, 404);
-                    return;
+                    await next();
                 }
-                return;
+                await next();
             }
         }
     }
